@@ -220,15 +220,27 @@ textarea{font-family:inherit}
   .timeHow{grid-template-columns:1fr}
   .timeResultRow{grid-template-columns:40px 1fr}.timeResultRow .err{grid-column:2;text-align:left}
 }
+
+.betWallet{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:8px 0 14px}
+.betWallet .tag{font-size:14px;padding:8px 12px}
+.betPanel{padding:16px;border:1px solid var(--line);border-radius:22px;background:linear-gradient(145deg,#fffdf9,#fff4fa);margin:10px 0 14px}
+.betPanel h3{margin:0 0 10px;color:#3f314d}
+.betChoiceRow{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 14px}
+.betChoice{border:1px solid var(--line);background:#fff;border-radius:999px;padding:10px 13px;font-weight:1000;color:#574a66;cursor:pointer}
+.betChoice.active{background:linear-gradient(135deg,#ffd45b,#ff9f69);border-color:transparent;color:#3d2d38;box-shadow:0 7px 18px rgba(255,170,92,.22)}
+.betChoice.risk.active{background:linear-gradient(135deg,#ff91bd,#ffbc85)}
+.betChoice:disabled{opacity:.4;cursor:not-allowed}
+.jackpotBox{padding:13px 15px;border-radius:18px;background:linear-gradient(135deg,#fff4bd,#ffe8f2);border:1px solid rgba(230,177,52,.2);font-weight:900;color:#624a25}
+@media(max-width:820px){.betChoiceRow{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.betChoice{width:100%;padding:12px 8px}}
 </style>
 </head>
 <body>
 <div class="app">
-<header><div class="brand"><div class="logo">波</div><div><b>宇製波波趣味坊</b><small>朋友聚會專用 · 今天不要太正經 · v18</small></div></div><button type="button" class="btn ghost" data-nav="home">⌂</button></header>
+<header><div class="brand"><div class="logo">波</div><div><b>宇製波波趣味坊</b><small>朋友聚會專用 · 今天不要太正經 · v19</small></div></div><button type="button" class="btn ghost" data-nav="home">⌂</button></header>
 
 <section id="home" class="screen active">
 <div class="hero"><div class="kicker">YUZHI BOBO PARTY LAB</div><h1>今晚，<br><span class="hot">玩點不一樣。</span></h1><p>聊天、鬥智、互相出賣，一個網站搞定。手機、iPad、筆電都可以直接玩，也都可以當主持螢幕。</p><div class="row"><button type="button" class="btn primary" data-nav="lobby">開一桌 ✨</button><button type="button" class="btn ghost" data-nav="deep">接受審判</button></div></div>
-<div class="sectionTitle"><h2>今晚玩什麼？</h2><span>BOBO v18 · 靈魂393題 · 瞎掰220詞</span></div>
+<div class="sectionTitle"><h2>今晚玩什麼？</h2><span>BOBO v19 · 靈魂393題 · 瞎掰220詞</span></div>
 <div class="grid">
 <button type="button" class="card" data-nav="deep"><div><div class="icon">💬</div><span class="tag">聊天 · 2–12 人</span><h3>靈魂審判局</h3><p>從暖身嘴砲一路審到靈魂深處，回答之前想清楚。</p></div><div class="go">進入審判 →</div></button>
 <button type="button" class="card" data-nav="auction"><div><div class="icon">⏱️</div><span class="tag">鬥智 · 3–10 人</span><h3>時間豪賭</h3><p>靠體感抓秒數，敢押多少就看你的膽量。</p></div><div class="go">我要賭秒數 →</div></button>
@@ -318,7 +330,7 @@ textarea{font-family:inherit}
         </select>
       </div>
     </div>
-    <div class="note" style="margin-top:12px"><b>計分：</b>第 1 名 +3、第 2 名 +2、第 3 名 +1。誤差越小排名越前；完全相同誤差則並列同分。</div>
+    <div class="note" style="margin-top:12px"><b>籌碼規則：</b>每人 20 枚起手。每回合先押 1 / 2 / 3 / 5 枚，再選精準度：±1.5 秒 ×1.5、±0.8 秒 ×2、±0.3 秒 ×4。失敗的下注會進公共獎池；每第 5 回合是 JACKPOT，最接近目標的人把獎池全部帶走。籌碼 ≤10 可 ALL IN；破產會拿 3 枚救濟金。</div>
     <div class="row" style="margin-top:14px"><button type="button" id="startAuctionGame" class="btn primary">開始第一回合 🎲</button></div>
 
     <div id="auctionHostRound" style="display:none;margin-top:18px">
@@ -326,7 +338,7 @@ textarea{font-family:inherit}
         <div id="auctionRoundBadge" class="roundBadge">第 1 / 5 回合</div>
         <div class="gameLabel">本回合目標</div>
         <div class="timeTarget"><span id="auctionTarget">12.0</span><small>秒</small></div>
-        <p id="auctionHostProgress" class="status">等待玩家挑戰…</p>
+        <div id="auctionJackpotHost" class="jackpotBox" style="margin:12px auto;max-width:420px">💰 公共獎池：0 枚</div><p id="auctionHostProgress" class="status">等待玩家挑戰…</p>
       </div>
       <div id="auctionSubmissionList"></div>
       <div id="auctionReveal" style="display:none;margin-top:14px"></div>
@@ -351,6 +363,27 @@ textarea{font-family:inherit}
       <div class="gameLabel">這回合的目標</div>
       <div class="timeTarget"><span id="auctionPlayerTarget">—</span><small>秒</small></div>
       <p id="auctionPlayerStatus" class="status">主持人開始後，準備相信你的時間感。</p>
+      <div class="betWallet"><span id="auctionWallet" class="tag">🪙 20 枚</span><span id="auctionJackpotPlayer" class="tag">💰 獎池 0 枚</span></div>
+    </div>
+
+    <div id="auctionBetBox" class="betPanel" style="display:none">
+      <h3>先下注，再開始計時</h3>
+      <div class="status" style="text-align:left;margin-bottom:5px">① 你要挑戰多精準？</div>
+      <div class="betChoiceRow">
+        <button type="button" class="betChoice risk active" data-auction-risk="safe">🟢 小賭<br><small>±1.5 秒 · ×1.5</small></button>
+        <button type="button" class="betChoice risk" data-auction-risk="bold">🟡 大賭<br><small>±0.8 秒 · ×2</small></button>
+        <button type="button" class="betChoice risk" data-auction-risk="wild">🔴 豪賭<br><small>±0.3 秒 · ×4</small></button>
+      </div>
+      <div class="status" style="text-align:left;margin-bottom:5px">② 要押幾枚？</div>
+      <div class="betChoiceRow">
+        <button type="button" class="betChoice active" data-auction-bet="1">1 枚</button>
+        <button type="button" class="betChoice" data-auction-bet="2">2 枚</button>
+        <button type="button" class="betChoice" data-auction-bet="3">3 枚</button>
+        <button type="button" class="betChoice" data-auction-bet="5">5 枚</button>
+        <button type="button" id="auctionAllIn" class="betChoice" data-auction-allin="1" style="display:none">🔥 老子全梭了</button>
+      </div>
+      <button type="button" id="confirmAuctionBet" class="btn pink" style="width:100%">確認下注 🪙</button>
+      <div id="auctionBetSummary" class="status" style="margin-top:9px"></div>
     </div>
 
     <div id="auctionPlayBox" style="display:none">
@@ -514,8 +547,8 @@ qs("#depthBtn").onclick=function(){var d=["輕鬆","中度","深入","全部"];d
 renderCats();
 var likely=["誰最有可能半夜突然買機票出國？","誰最有可能中了樂透三個月後才跟大家說？","誰最有可能喝醉後傳訊息給不該傳的人？","誰最有可能在荒島上活最久？","誰最有可能突然辭職去做完全不同的工作？","誰最有可能偷偷查完所有人的星座？","誰最有可能旅行時把行程排到分鐘？","誰最有可能臨時起意開車去看日出？","誰最有可能最早退休？","誰最有可能在吵架後第一個道歉？","誰最有可能手機只剩 1% 還完全不焦慮？","誰最有可能把秘密藏最久？","誰最有可能在群組已讀但永遠不回？","誰最有可能最先結婚？","誰最有可能最晚結婚？","誰最有可能突然移民？","誰最有可能一夜之間爆紅？","誰最有可能被詐騙集團騙到？","誰最有可能開一間奇怪但很成功的店？","誰最有可能參加實境節目然後變迷因？","誰最有可能看恐怖片第一個尖叫？","誰最有可能旅行到一半跟陌生人變超熟？","誰最有可能為愛搬去另一個城市？","誰最有可能為了吃一間店排三小時？","誰最有可能忘記自己把車停在哪？","誰最有可能把前任全部封鎖？","誰最有可能分手後最快走出來？","誰最有可能偷偷記得所有人的生日？","誰最有可能喝醉後哭？","誰最有可能喝醉後一直講同一件事？","誰最有可能喝醉後突然變超愛大家？","誰最有可能最會裝沒醉？","誰最有可能因為寵物取消約會？","誰最有可能把家裡佈置得最浮誇？","誰最有可能退休後跑去鄉下種田？","誰最有可能突然去刺青？","誰最有可能一個人去旅行一個月？","誰最有可能跟陌生人吵架？","誰最有可能在便利商店遇到真愛？","誰最有可能朋友失戀時陪到天亮？","誰最有可能為了遊戲勝負翻臉五分鐘？","誰最有可能嘴上說隨便其實最有意見？","誰最有可能最會記仇？","誰最有可能氣消得最快？","誰最有可能成為大家老了以後還會聯絡的人？","誰最有可能忽然消失三天跑去充電？","誰最有可能最早財務自由？","誰最有可能最容易心軟？","誰最有可能嘴最毒但心最軟？","誰最有可能在末日第一天就組織大家分工？","誰最有可能末日來了還先拍限動？","誰最有可能為了一句話想三天？"];
 qs("#nextLikely").onclick=function(){qs("#likelyQuestion").textContent=likely[Math.floor(Math.random()*likely.length)]};
-var truths=["你最近一次心虛，是因為什麼？","在場有沒有一個人，你第一次見面時對他的印象完全錯了？","你做過最荒謬的一次衝動消費是什麼？","你最近偷偷羨慕誰？羨慕什麼？","你最不想讓前任知道你現在的哪件事？","你有沒有曾經已讀不回，純粹因為懶得回？","你最近一次說謊是什麼？","你最容易對哪一類人失去耐心？","如果一定要刪掉一個社群 App，你最捨不得刪哪個？","你有沒有偷偷查過在場某個人的社群？","你曾經為了融入一群人假裝喜歡過什麼？","你最尷尬的一次約會經驗是什麼？","你有沒有後悔過跟某個人變熟？","你曾經因為嫉妒做過什麼幼稚的事？","哪一種稱讚最容易讓你暈？","你最常嘴硬的是哪一件事？","你最不能接受伴侶做的事情是什麼？","如果明天可以跟前任聊十分鐘，你會聊嗎？","你有沒有曾經看不爽朋友的另一半？為什麼？","你最想改掉自己哪個壞習慣？","你曾經假裝沒看到訊息，只為了不想處理嗎？","你目前人生最不滿意的是哪一部分？","你有沒有曾經因為寂寞而聯絡不該聯絡的人？","你最怕別人發現自己其實很在意什麼？","你有沒有一件超級雙標的事？","你目前最捨不得失去的人是誰？","你覺得自己戀愛腦嗎？","你有沒有曾經對朋友說『沒事』，其實超有事？","如果可以偷看一個人的手機五分鐘，你會選誰？","你曾經最想逃離哪一場聚會？","你有沒有假裝忘記某件事，只是不想負責？","你做過最丟臉但現在可以笑著講的事是什麼？","你目前最想重新來過的一個決定是什麼？","你最介意別人怎麼評價你？","你有沒有一個一直不敢開始的計畫？","如果要誠實說，你現在快樂嗎？"];
-var dares=["用主播語氣介紹左邊的人 30 秒。","模仿在場某個人最常講話的樣子，讓大家猜是誰。","用最浮誇的方式稱讚右邊的人三句。","打開相簿，讓大家選一張最近 30 天內最荒謬的照片，你要解釋它。","用偶像劇語氣對一杯水告白 20 秒。","選一個人，跟他一起拍一張『剛領證』風格合照。","用三種不同情緒講『我真的沒事』。","把手機桌布亮給大家看並解釋為什麼用它。","讓大家幫你取一個新綽號，本輪結束前都要用它稱呼你。","用廣告推銷的方式介紹自己 30 秒。","選一個人，互看 15 秒不能笑。","學一種動物走到房間另一邊再回來。","用饒舌方式介紹今天自己怎麼來到這裡。","選一個人，對他講一句超浮誇偶像劇台詞。","閉眼讓大家指定一個表情，睜眼後維持那個表情自拍。","用導航語音講述你最近一次約會或聚會的過程。","把今天的穿搭當成時裝週造型介紹 20 秒。","用慢動作演出『看到帳單的瞬間』。","讓大家選一首歌，你只能哼前 15 秒不能唱詞。","用幼稚園老師口吻教大家一件你很擅長的事。","跟右邊的人交換座位，但要演得像政權交接。","用客服語氣回應大家隨機問你的三個問題。","挑一個人，互相用一句話幫對方寫交友軟體自介。","用超級正經的態度念出你手機裡最後一個表情符號。","演一段『凌晨兩點突然想起黑歷史』的默劇。","假裝你中了樂透，用 20 秒發表得獎感言。","選一個人，替他頒一個荒謬獎項並發表理由。","用最有魅力的方式說『可以幫我拿衛生紙嗎？』。","讓大家指定一個日常物品，你要對它進行情緒勒索 20 秒。","用恐怖片角色的方式走去開門再走回來。","把自己的名字用三種不同角色風格介紹一次。","用婚禮主持人口吻介紹這場聚會。","假裝自己是網紅，對鏡頭做 20 秒『今天來開箱我的朋友』。","選一個人，兩人一起擺出最尷尬的團體照姿勢 10 秒。","用氣象主播語氣預報你明天的心情。","演出『老闆突然說今天不用上班』的反應。"];
+var truths=["你最近一次心虛，是因為什麼？","在場有沒有一個人，你第一次見面時對他的印象完全錯了？","你做過最荒謬的一次衝動消費是什麼？","你最近偷偷羨慕誰？羨慕什麼？","你最不想讓前任知道你現在的哪件事？","你有沒有曾經已讀不回，純粹因為懶得回？","你最近一次說謊是什麼？","你最容易對哪一類人失去耐心？","如果一定要刪掉一個社群軟體，你最捨不得刪哪個？","你有沒有偷偷查過在場某個人的社群？","你曾經為了融入一群人假裝喜歡過什麼？","你最尷尬的一次約會經驗是什麼？","你有沒有後悔過跟某個人變熟？","你曾經因為嫉妒做過什麼幼稚的事？","哪一種稱讚最容易讓你暈？","你最常嘴硬的是哪一件事？","你最不能接受伴侶做的事情是什麼？","如果明天可以跟前任聊十分鐘，你會聊嗎？","你有沒有曾經看不爽朋友的另一半？為什麼？","你最想改掉自己哪個壞習慣？","你曾經假裝沒看到訊息，只為了不想處理嗎？","你目前人生最不滿意的是哪一部分？","你有沒有曾經因為寂寞而聯絡不該聯絡的人？","你最怕別人發現自己其實很在意什麼？","你有沒有一件超級雙標的事？","你目前最捨不得失去的人是誰？","你覺得自己戀愛腦嗎？","你有沒有曾經對朋友說『沒事』，其實超有事？","如果可以偷看一個人的手機五分鐘，你會選誰？","你曾經最想逃離哪一場聚會？","你有沒有假裝忘記某件事，只是不想負責？","你做過最丟臉但現在可以笑著講的事是什麼？","你目前最想重新來過的一個決定是什麼？","你最介意別人怎麼評價你？","你有沒有一個一直不敢開始的計畫？","如果要誠實說，你現在快樂嗎？"];
+var dares=["用主播語氣介紹左邊的人 30 秒。","模仿在場某個人最常講話的樣子，讓大家猜是誰。","用最浮誇的方式稱讚右邊的人三句。","打開相簿，讓大家選一張最近 30 天內最荒謬的照片，你要解釋它。","用偶像劇語氣對一杯水告白 20 秒。","選一個人，跟他一起拍一張『剛登記結婚』風格合照。","用三種不同情緒講『我真的沒事』。","把手機桌布亮給大家看並解釋為什麼用它。","讓大家幫你取一個新綽號，本輪結束前都要用它稱呼你。","用廣告推銷的方式介紹自己 30 秒。","選一個人，互看 15 秒不能笑。","學一種動物走到房間另一邊再回來。","用饒舌方式介紹今天自己怎麼來到這裡。","選一個人，對他講一句超浮誇偶像劇台詞。","閉眼讓大家指定一個表情，睜眼後維持那個表情自拍。","用導航語音講述你最近一次約會或聚會的過程。","把今天的穿搭當成時裝週造型介紹 20 秒。","用慢動作演出『看到帳單的瞬間』。","讓大家選一首歌，你只能哼前 15 秒不能唱詞。","用幼稚園老師口吻教大家一件你很擅長的事。","跟右邊的人交換座位，但要演得像政權交接。","用客服人員的語氣回應大家隨機問你的三個問題。","挑一個人，互相用一句話幫對方寫交友軟體自介。","用超級正經的態度念出你手機裡最後一個表情符號。","演一段『凌晨兩點突然想起黑歷史』的默劇。","假裝你中了樂透，用 20 秒發表得獎感言。","選一個人，替他頒一個荒謬獎項並發表理由。","用最有魅力的方式說『可以幫我拿衛生紙嗎？』。","讓大家指定一個日常物品，你要對它進行情緒勒索 20 秒。","用恐怖片角色的方式走去開門再走回來。","把自己的名字用三種不同角色風格介紹一次。","用婚禮主持人口吻介紹這場聚會。","假裝自己是網路創作者，對鏡頭做 20 秒『今天來開箱我的朋友』。","選一個人，兩人一起擺出最尷尬的團體照姿勢 10 秒。","用氣象主播語氣預報你明天的心情。","演出『老闆突然說今天不用上班』的反應。"];
 var punishMode="truth";
 function drawPunish(){var pool=punishMode==="truth"?truths:dares;qs("#punishType").textContent=punishMode==="truth"?"真心話":"大冒險";qs("#punishQuestion").textContent=pool[Math.floor(Math.random()*pool.length)]}
 qs("#truthMode").onclick=function(){punishMode="truth";drawPunish()};
@@ -1075,239 +1108,235 @@ renderHostCats();
 })();
 var auctionNet={
   mode:null,peer:null,hostConn:null,conns:{},players:{},room:"",
-  roundNo:0,totalRounds:5,minSec:8,maxSec:20,target:0,submissions:{},difficulty:"normal",visibleUntil:0,
-  phase:"lobby",pressStartedAt:0,pressPointerId:null,playerTimerRaf:0
+  roundNo:0,totalRounds:5,minSec:8,maxSec:20,target:0,submissions:{},bets:{},
+  difficulty:"normal",visibleUntil:0,jackpot:0,
+  phase:"lobby",pressStartedAt:0,pressPointerId:null,playerTimerRaf:0,
+  playerChips:20,selectedBet:1,selectedRisk:"safe"
 };
+var auctionRisk={
+  safe:{label:"小賭",threshold:1.5,multiplier:1.5},
+  bold:{label:"大賭",threshold:.8,multiplier:2},
+  wild:{label:"豪賭",threshold:.3,multiplier:4}
+};
+function fmtChips(n){return Number(n).toFixed(Number(n)%1?1:0)}
 function auctionPeerId(code){return "bobo-time-"+String(code||"").toLowerCase()}
 function auctionPlayersArray(){return Object.keys(auctionNet.players).map(function(id){return auctionNet.players[id]})}
-function showAuctionPane(id){
-  ["auctionEntry","auctionHost","auctionJoin","auctionPlayer"].forEach(function(x){var el=qs("#"+x);if(el)el.style.display=x===id?"block":"none"})
-}
+function showAuctionPane(id){["auctionEntry","auctionHost","auctionJoin","auctionPlayer"].forEach(function(x){var el=qs("#"+x);if(el)el.style.display=x===id?"block":"none"})}
 function updateAuctionRoster(){
   var arr=auctionPlayersArray(),box=qs("#auctionPlayers");
-  if(box){box.innerHTML="";arr.forEach(function(p){var c=document.createElement("div");c.className="chip";c.textContent=p.name+" · "+(p.score||0)+"分";box.appendChild(c)})}
+  if(box){box.innerHTML="";arr.slice().sort(function(a,b){return(b.chips||0)-(a.chips||0)}).forEach(function(p){var c=document.createElement("div");c.className="chip";c.textContent=p.name+" · 🪙 "+fmtChips(p.chips==null?20:p.chips);box.appendChild(c)})}
   if(qs("#auctionPlayerCount"))qs("#auctionPlayerCount").textContent=arr.length+" 人";
+  if(qs("#auctionJackpotHost"))qs("#auctionJackpotHost").textContent="💰 公共獎池："+fmtChips(auctionNet.jackpot)+" 枚"+(auctionNet.roundNo>0&&auctionNet.roundNo%5===0?" · JACKPOT 回合！":"")
+}
+function updateAuctionPlayerWallet(){
+  if(qs("#auctionWallet"))qs("#auctionWallet").textContent="🪙 "+fmtChips(auctionNet.playerChips)+" 枚";
+  if(qs("#auctionAllIn"))qs("#auctionAllIn").style.display=auctionNet.playerChips<=10&&auctionNet.playerChips>0?"inline-block":"none";
+  qsa("[data-auction-bet]").forEach(function(b){b.disabled=Number(b.dataset.auctionBet)>auctionNet.playerChips})
 }
 function attachAuctionHostConn(conn){
   auctionNet.conns[conn.peer]=conn;
   conn.on("data",function(msg){auctionHostMessage(conn,msg)});
-  conn.on("close",function(){delete auctionNet.conns[conn.peer];delete auctionNet.players[conn.peer];delete auctionNet.submissions[conn.peer];updateAuctionRoster();renderAuctionSubmissions()});
+  conn.on("close",function(){delete auctionNet.conns[conn.peer];delete auctionNet.players[conn.peer];delete auctionNet.submissions[conn.peer];delete auctionNet.bets[conn.peer];updateAuctionRoster();renderAuctionSubmissions()});
   conn.on("error",function(){})
 }
 function auctionHostMessage(conn,msg){
   if(!msg||!msg.type)return;
   if(msg.type==="join"){
     var nm=cleanName(msg.name)||"玩家";
-    auctionNet.players[conn.peer]={id:conn.peer,name:nm,score:0};
-    safeSend(conn,{type:"joined",name:nm});
-    updateAuctionRoster();
-    qs("#auctionHostStatus").textContent=auctionPlayersArray().length+" 位玩家已加入"
+    auctionNet.players[conn.peer]={id:conn.peer,name:nm,chips:20};
+    safeSend(conn,{type:"joined",name:nm,chips:20,jackpot:auctionNet.jackpot});
+    updateAuctionRoster();qs("#auctionHostStatus").textContent=auctionPlayersArray().length+" 位玩家已加入"
+  }
+  if(msg.type==="auctionBet"&&auctionNet.phase==="running"){
+    var p=auctionNet.players[conn.peer];if(!p||auctionNet.bets[conn.peer])return;
+    var risk=auctionRisk[msg.risk]?msg.risk:"safe";
+    var wanted=Number(msg.bet)||1,allIn=!!msg.allIn;
+    var bet=allIn&&p.chips<=10?p.chips:wanted;
+    bet=Math.max(0,Math.min(p.chips,bet));
+    if(bet<=0){safeSend(conn,{type:"auctionBetRejected",reason:"籌碼不足"});return}
+    p.chips=Math.round((p.chips-bet)*10)/10;
+    auctionNet.bets[conn.peer]={bet:bet,risk:risk,allIn:allIn};
+    safeSend(conn,{type:"auctionBetAccepted",bet:bet,risk:risk,chips:p.chips,jackpot:auctionNet.jackpot});
+    renderAuctionSubmissions();updateAuctionRoster()
   }
   if(msg.type==="auctionSubmit"&&auctionNet.phase==="running"){
-    if(auctionNet.submissions[conn.peer]||!auctionNet.players[conn.peer])return;
+    if(auctionNet.submissions[conn.peer]||!auctionNet.players[conn.peer]||!auctionNet.bets[conn.peer])return;
     var elapsed=Math.max(0,Math.min(300,Number(msg.elapsed)||0));
     auctionNet.submissions[conn.peer]={id:conn.peer,name:auctionNet.players[conn.peer].name,elapsed:elapsed};
     safeSend(conn,{type:"auctionSubmitted"});
     renderAuctionSubmissions();
     if(Object.keys(auctionNet.submissions).length>=auctionPlayersArray().length){
-      qs("#revealAuction").style.display="inline-block";
-      qs("#auctionHostProgress").textContent="全部完成！可以揭曉了 👀"
+      qs("#revealAuction").style.display="inline-block";qs("#auctionHostProgress").textContent="全部完成！可以揭曉了 👀"
     }
   }
 }
 function createAuctionRoom(){
   loadPeerLib().then(function(){
     auctionNet.mode="host";auctionNet.room=makeRoomCode();auctionNet.peer=new Peer(auctionPeerId(auctionNet.room));
-    auctionNet.peer.on("open",function(){
-      showAuctionPane("auctionHost");qs("#auctionRoomCode").textContent=auctionNet.room;
-      qs("#auctionHostStatus").textContent="房間已開好，等朋友加入";
-      history.replaceState(null,"",location.pathname+"?auction="+auctionNet.room)
-    });
+    auctionNet.peer.on("open",function(){showAuctionPane("auctionHost");qs("#auctionRoomCode").textContent=auctionNet.room;qs("#auctionHostStatus").textContent="房間已開好，等朋友加入";history.replaceState(null,"",location.pathname+"?auction="+auctionNet.room)});
     auctionNet.peer.on("connection",attachAuctionHostConn);
     auctionNet.peer.on("error",function(){qs("#auctionHostStatus").textContent="房間建立失敗，請重試"})
   }).catch(function(){toast("多人模組載入失敗")})
 }
 function joinAuctionRoom(){
   var code=String(qs("#auctionJoinCode").value||"").trim().toUpperCase(),name=cleanName(qs("#auctionName").value);
-  if(!name){toast("先輸入暱稱");return}
-  if(code.length!==6){toast("房間碼是 6 位");return}
-  recordVisit(name).catch(function(){});
-  qs("#auctionJoinStatus").textContent="連線中…";
+  if(!name){toast("先輸入暱稱");return}if(code.length!==6){toast("房間碼是 6 位");return}
+  recordVisit(name).catch(function(){});qs("#auctionJoinStatus").textContent="連線中…";
   loadPeerLib().then(function(){
     auctionNet.mode="player";auctionNet.room=code;auctionNet.peer=new Peer();
     auctionNet.peer.on("open",function(){
       var conn=auctionNet.peer.connect(auctionPeerId(code),{reliable:true});auctionNet.hostConn=conn;
-      conn.on("open",function(){safeSend(conn,{type:"join",name:name})});
-      conn.on("data",auctionPlayerMessage);
+      conn.on("open",function(){safeSend(conn,{type:"join",name:name})});conn.on("data",auctionPlayerMessage);
       conn.on("close",function(){qs("#auctionPlayerStatus").textContent="與主持人連線中斷。"})
     });
     auctionNet.peer.on("error",function(){qs("#auctionJoinStatus").textContent="找不到房間，請確認房間碼"})
   }).catch(function(){qs("#auctionJoinStatus").textContent="多人模組載入失敗"})
 }
+function resetAuctionBetUI(){
+  auctionNet.selectedBet=1;auctionNet.selectedRisk="safe";
+  qsa("[data-auction-risk]").forEach(function(b){b.classList.toggle("active",b.dataset.auctionRisk==="safe")});
+  qsa("[data-auction-bet]").forEach(function(b){b.classList.toggle("active",b.dataset.auctionBet==="1")});
+  if(qs("#auctionAllIn"))qs("#auctionAllIn").classList.remove("active");
+  qs("#auctionBetSummary").textContent="目前：小賭 ±1.5 秒 ×1.5｜押 1 枚";
+  updateAuctionPlayerWallet()
+}
 function auctionPlayerMessage(msg){
   if(!msg||!msg.type)return;
   if(msg.type==="joined"){
-    showAuctionPane("auctionPlayer");
-    qs("#auctionPlayerStatus").textContent="加入成功，等待主持人開始。"
+    auctionNet.playerChips=Number(msg.chips==null?20:msg.chips);showAuctionPane("auctionPlayer");updateAuctionPlayerWallet();
+    qs("#auctionJackpotPlayer").textContent="💰 獎池 "+fmtChips(msg.jackpot||0)+" 枚";qs("#auctionPlayerStatus").textContent="加入成功，等待主持人開始。"
   }
   if(msg.type==="auctionRound"){
     auctionNet.phase="running";auctionNet.pressStartedAt=0;auctionNet.pressPointerId=null;
-    qs("#auctionPlayerRound").textContent="第 "+msg.roundNo+" / "+msg.totalRounds+" 回合";
+    auctionNet.playerChips=Number(msg.chips);auctionNet.difficulty=msg.difficulty||"normal";auctionNet.visibleUntil=Number(msg.visibleUntil)||0;
+    qs("#auctionPlayerRound").textContent="第 "+msg.roundNo+" / "+msg.totalRounds+" 回合"+(msg.jackpotRound?" · JACKPOT 💰":"");
     qs("#auctionPlayerTarget").textContent=Number(msg.target).toFixed(1);
-    qs("#auctionPlayerStatus").textContent="看好目標。準備好後，按住大按鈕開始。";
-    qs("#auctionPlayBox").style.display="block";qs("#auctionPlayerResult").style.display="none";
+    qs("#auctionJackpotPlayer").textContent="💰 獎池 "+fmtChips(msg.jackpot||0)+" 枚";
+    qs("#auctionPlayerStatus").textContent=msg.jackpotRound?"JACKPOT 回合！最接近的人會把公共獎池全部帶走。":"先下注，再挑戰你的時間感。";
+    qs("#auctionPlayBox").style.display="none";qs("#auctionPlayerResult").style.display="none";qs("#auctionBetBox").style.display="block";
     qs("#auctionVisibleClock").textContent=msg.difficulty==="hard"?"隱藏":"0.0";
     qs("#auctionDifficultyHint").textContent=msg.difficulty==="hard"?"困難模式｜全程不顯示秒數":"普通模式｜前 "+Number(msg.visibleUntil).toFixed(1)+" 秒會顯示，之後隱藏";
-    auctionNet.difficulty=msg.difficulty||"normal";auctionNet.visibleUntil=Number(msg.visibleUntil)||0;
-    var b=qs("#auctionHoldBtn");b.disabled=false;b.classList.remove("holding");b.innerHTML="<span>按住開始</span><small>放開就停</small>"
+    var b=qs("#auctionHoldBtn");b.disabled=true;b.classList.remove("holding");b.innerHTML="<span>先下注</span><small>下注後才能開始</small>";
+    resetAuctionBetUI()
   }
+  if(msg.type==="auctionBetAccepted"){
+    auctionNet.playerChips=Number(msg.chips);updateAuctionPlayerWallet();qs("#auctionBetBox").style.display="none";qs("#auctionPlayBox").style.display="block";
+    var r=auctionRisk[msg.risk];qs("#auctionPlayerStatus").textContent="下注完成：押 "+fmtChips(msg.bet)+" 枚 · "+r.label+" ±"+r.threshold+" 秒 ×"+r.multiplier;
+    var b=qs("#auctionHoldBtn");b.disabled=false;b.innerHTML="<span>按住開始</span><small>放開就停</small>"
+  }
+  if(msg.type==="auctionBetRejected"){toast(msg.reason||"下注失敗")}
   if(msg.type==="auctionSubmitted"){
-    qs("#auctionPlayerStatus").textContent="時間已鎖定 🔒 等其他人完成。";
-    qs("#auctionHoldBtn").disabled=true;qs("#auctionHoldBtn").classList.remove("holding");
-    qs("#auctionHoldBtn").innerHTML="<span>已完成</span><small>等待揭曉</small>"
+    qs("#auctionPlayerStatus").textContent="時間已鎖定 🔒 等其他人完成。";qs("#auctionHoldBtn").disabled=true;qs("#auctionHoldBtn").classList.remove("holding");qs("#auctionHoldBtn").innerHTML="<span>已完成</span><small>等待揭曉</small>"
   }
   if(msg.type==="auctionReveal"){
-    auctionNet.phase="reveal";
-    qs("#auctionPlayBox").style.display="none";qs("#auctionPlayerResult").style.display="block";
+    auctionNet.phase="reveal";auctionNet.playerChips=Number(msg.myChips);updateAuctionPlayerWallet();
+    qs("#auctionJackpotPlayer").textContent="💰 獎池 "+fmtChips(msg.jackpot)+" 枚";
+    qs("#auctionBetBox").style.display="none";qs("#auctionPlayBox").style.display="none";qs("#auctionPlayerResult").style.display="block";
     var mine=msg.results.find(function(x){return x.id===auctionNet.peer.id});
     qs("#auctionPlayerResult").innerHTML=
       "<div class='definitionHero'><span>目標時間</span><strong>"+Number(msg.target).toFixed(1)+" 秒</strong></div>"+
-      (mine?"<b>你停在 "+mine.elapsed.toFixed(2)+" 秒</b><br>誤差 "+mine.error.toFixed(2)+" 秒<br><br>":"")+
-      "<b>本回合排名：</b><br>"+msg.results.map(function(x,i){return(i+1)+". "+escapeHtml(x.name)+"　"+x.elapsed.toFixed(2)+" 秒　誤差 "+x.error.toFixed(2)+" 秒"}).join("<br>")+
-      "<br><br><b>總分：</b><br>"+msg.scores.map(function(s,i){return(i+1)+". "+escapeHtml(s.name)+"　"+s.score+" 分"}).join("<br>");
+      (mine?"<b>你停在 "+mine.elapsed.toFixed(2)+" 秒</b><br>誤差 "+mine.error.toFixed(2)+" 秒<br>"+(mine.success?"✅ 挑戰成功，拿回 "+fmtChips(mine.payout)+" 枚":"💸 挑戰失敗，下注進獎池")+(mine.jackpotWin?"<br>💰 JACKPOT！你拿走 "+fmtChips(mine.jackpotWon)+" 枚":"")+(mine.bailout?"<br>🥲 破產救濟金 +3 枚":"")+"<br><br>":"")+
+      "<b>本回合結果：</b><br>"+msg.results.map(function(x,i){return(i+1)+". "+escapeHtml(x.name)+"　誤差 "+x.error.toFixed(2)+" 秒　"+(x.success?"✅":"❌")}).join("<br>")+
+      "<br><br><b>籌碼排行：</b><br>"+msg.standings.map(function(s,i){return(i+1)+". "+escapeHtml(s.name)+"　🪙 "+fmtChips(s.chips)}).join("<br>");
     qs("#auctionPlayerStatus").textContent=msg.gameOver?"本場結束！":"等主持人開下一回合。"
   }
 }
 function startAuctionRound(){
-  var arr=auctionPlayersArray();
-  if(arr.length<2){toast("至少要 2 位玩家");return}
+  var arr=auctionPlayersArray();if(arr.length<2){toast("至少要 2 位玩家");return}
   if(auctionNet.roundNo===0){
     auctionNet.totalRounds=parseInt(qs("#auctionRounds").value||"5",10);
-    var range=String(qs("#auctionRange").value||"8,20").split(",");
-    auctionNet.minSec=parseFloat(range[0]);auctionNet.maxSec=parseFloat(range[1]);
-    auctionNet.difficulty=String(qs("#auctionDifficulty").value||"normal");
-    arr.forEach(function(p){p.score=0})
+    var range=String(qs("#auctionRange").value||"8,20").split(",");auctionNet.minSec=parseFloat(range[0]);auctionNet.maxSec=parseFloat(range[1]);
+    auctionNet.difficulty=String(qs("#auctionDifficulty").value||"normal");auctionNet.jackpot=0;
+    arr.forEach(function(p){p.chips=20})
   }
   if(auctionNet.roundNo>=auctionNet.totalRounds){toast("本場已經結束");return}
-  auctionNet.roundNo++;
-  auctionNet.target=Math.round((auctionNet.minSec+Math.random()*(auctionNet.maxSec-auctionNet.minSec))*10)/10;
-  auctionNet.visibleUntil=auctionNet.difficulty==="normal"?Math.max(2,Math.min(auctionNet.target-2,Math.round(auctionNet.target*0.55*10)/10)):0;
-  auctionNet.submissions={};auctionNet.phase="running";
-  qs("#auctionHostRound").style.display="block";
-  qs("#auctionRoundBadge").textContent="第 "+auctionNet.roundNo+" / "+auctionNet.totalRounds+" 回合";
-  qs("#auctionTarget").textContent=auctionNet.target.toFixed(1);
-  qs("#auctionHostProgress").textContent="等待玩家挑戰… 0 / "+arr.length+"｜"+(auctionNet.difficulty==="hard"?"困難：全程隱藏":"普通：前段顯示");
-  qs("#auctionSubmissionList").innerHTML="";qs("#auctionReveal").style.display="none";
-  qs("#revealAuction").style.display="none";qs("#nextAuctionRound").style.display="none";qs("#startAuctionGame").style.display="none";
-  arr.forEach(function(p){safeSend(auctionNet.conns[p.id],{type:"auctionRound",roundNo:auctionNet.roundNo,totalRounds:auctionNet.totalRounds,target:auctionNet.target,difficulty:auctionNet.difficulty,visibleUntil:auctionNet.visibleUntil})});
-  renderAuctionSubmissions()
+  auctionNet.roundNo++;auctionNet.target=Math.round((auctionNet.minSec+Math.random()*(auctionNet.maxSec-auctionNet.minSec))*10)/10;
+  auctionNet.visibleUntil=auctionNet.difficulty==="normal"?Math.max(2,Math.min(auctionNet.target-2,Math.round(auctionNet.target*.55*10)/10)):0;
+  auctionNet.submissions={};auctionNet.bets={};auctionNet.phase="running";
+  var jackpotRound=auctionNet.roundNo%5===0;
+  qs("#auctionHostRound").style.display="block";qs("#auctionRoundBadge").textContent="第 "+auctionNet.roundNo+" / "+auctionNet.totalRounds+" 回合"+(jackpotRound?" · JACKPOT 💰":"");
+  qs("#auctionTarget").textContent=auctionNet.target.toFixed(1);qs("#auctionHostProgress").textContent=(jackpotRound?"JACKPOT 回合｜":"")+"等待玩家下注與挑戰…";
+  qs("#auctionSubmissionList").innerHTML="";qs("#auctionReveal").style.display="none";qs("#revealAuction").style.display="none";qs("#nextAuctionRound").style.display="none";qs("#startAuctionGame").style.display="none";
+  arr.forEach(function(p){safeSend(auctionNet.conns[p.id],{type:"auctionRound",roundNo:auctionNet.roundNo,totalRounds:auctionNet.totalRounds,target:auctionNet.target,difficulty:auctionNet.difficulty,visibleUntil:auctionNet.visibleUntil,chips:p.chips,jackpot:auctionNet.jackpot,jackpotRound:jackpotRound})});
+  updateAuctionRoster();renderAuctionSubmissions()
 }
 function renderAuctionSubmissions(){
   if(!qs("#auctionSubmissionList"))return;
-  var arr=auctionPlayersArray(),got=Object.keys(auctionNet.submissions).length;
-  if(auctionNet.phase==="running")qs("#auctionHostProgress").textContent="已完成 "+got+" / "+arr.length+" 人";
+  var arr=auctionPlayersArray(),done=Object.keys(auctionNet.submissions).length;
   var box=qs("#auctionSubmissionList");box.innerHTML="";
   arr.forEach(function(p){
-    var done=!!auctionNet.submissions[p.id],d=document.createElement("div");
-    d.className="chip";d.style.margin="4px";d.textContent=(done?"✅ ":"⏳ ")+p.name+(done?" 已鎖定":" 挑戰中");
-    box.appendChild(d)
-  })
+    var hasBet=!!auctionNet.bets[p.id],hasDone=!!auctionNet.submissions[p.id],d=document.createElement("div");
+    d.className="chip";d.style.margin="4px";d.textContent=(hasDone?"✅ ":hasBet?"🪙 ":"⏳ ")+p.name+(hasDone?" 已完成":hasBet?" 已下注，挑戰中":" 等待下注");box.appendChild(d)
+  });
+  if(auctionNet.phase==="running")qs("#auctionHostProgress").textContent="已完成 "+done+" / "+arr.length+" 人"+(auctionNet.roundNo%5===0?"｜JACKPOT 回合 💰":"")
 }
 function revealAuctionRound(){
   if(auctionNet.phase!=="running")return;
+  var arr=auctionPlayersArray();
   var results=Object.keys(auctionNet.submissions).map(function(id){
-    var x=auctionNet.submissions[id];return{id:id,name:x.name,elapsed:x.elapsed,error:Math.abs(x.elapsed-auctionNet.target)}
+    var x=auctionNet.submissions[id],b=auctionNet.bets[id],r=auctionRisk[b.risk],error=Math.abs(x.elapsed-auctionNet.target),success=error<=r.threshold;
+    return{id:id,name:x.name,elapsed:x.elapsed,error:error,bet:b.bet,risk:b.risk,threshold:r.threshold,multiplier:r.multiplier,success:success,payout:0,jackpotWin:false,jackpotWon:0,bailout:false}
   }).sort(function(a,b){return a.error-b.error});
-  if(!results.length){toast("還沒有人完成");return}
-  var awards=[3,2,1],lastError=null,rankIndex=-1;
-  results.forEach(function(x,i){
-    if(lastError===null||Math.abs(x.error-lastError)>0.000001)rankIndex=i;
-    var pts=awards[rankIndex]||0;if(auctionNet.players[x.id])auctionNet.players[x.id].score=(auctionNet.players[x.id].score||0)+pts;
-    lastError=x.error
+  if(results.length<arr.length){toast("還有人沒完成");return}
+  results.forEach(function(x){
+    if(x.success){x.payout=Math.round(x.bet*x.multiplier*10)/10;auctionNet.players[x.id].chips=Math.round((auctionNet.players[x.id].chips+x.payout)*10)/10}
+    else{auctionNet.jackpot=Math.round((auctionNet.jackpot+x.bet)*10)/10}
   });
+  if(auctionNet.roundNo%5===0&&results.length){
+    var winner=results[0],pot=auctionNet.jackpot;
+    if(pot>0){winner.jackpotWin=true;winner.jackpotWon=pot;auctionNet.players[winner.id].chips=Math.round((auctionNet.players[winner.id].chips+pot)*10)/10;auctionNet.jackpot=0}
+  }
+  results.forEach(function(x){var p=auctionNet.players[x.id];if(p.chips<=0){p.chips=3;x.bailout=true}});
   auctionNet.phase="reveal";
-  var scores=auctionPlayersArray().slice().sort(function(a,b){return(b.score||0)-(a.score||0)}).map(function(p){return{name:p.name,score:p.score||0}});
+  var standings=auctionPlayersArray().slice().sort(function(a,b){return(b.chips||0)-(a.chips||0)}).map(function(p){return{name:p.name,chips:p.chips||0}});
   var gameOver=auctionNet.roundNo>=auctionNet.totalRounds;
   qs("#auctionReveal").style.display="block";
   qs("#auctionReveal").innerHTML=
     "<div class='definitionHero'><span>本回合目標</span><strong>"+auctionNet.target.toFixed(1)+" 秒</strong></div>"+
-    results.map(function(x,i){return "<div class='timeResultRow'><div class='rank'>"+(i===0?"🏆":(i+1))+"</div><div class='who'>"+escapeHtml(x.name)+" · "+x.elapsed.toFixed(2)+" 秒</div><div class='err'>誤差 "+x.error.toFixed(2)+" 秒</div></div>"}).join("")+
-    "<br><b>總分排行榜：</b><br>"+scores.map(function(s,i){return(i+1)+". "+escapeHtml(s.name)+"　"+s.score+" 分"}).join("<br>")+
-    (gameOver&&scores.length?"<div class='setSummary'><b>🏁 本場結束</b><br>冠軍："+escapeHtml(scores[0].name)+"　"+scores[0].score+" 分</div>":"");
+    results.map(function(x,i){var r=auctionRisk[x.risk];return "<div class='timeResultRow'><div class='rank'>"+(i===0?"🏆":(i+1))+"</div><div class='who'>"+escapeHtml(x.name)+" · "+x.elapsed.toFixed(2)+" 秒<br><small>押 "+fmtChips(x.bet)+"｜"+r.label+" ±"+r.threshold+" ×"+r.multiplier+"｜"+(x.success?"✅ 成功":"❌ 失敗")+(x.jackpotWin?"｜💰 JACKPOT +"+fmtChips(x.jackpotWon):"")+(x.bailout?"｜🥲 救濟 +3":"")+"</small></div><div class='err'>誤差 "+x.error.toFixed(2)+" 秒</div></div>"}).join("")+
+    "<div class='jackpotBox' style='margin-top:12px'>💰 下一回合公共獎池："+fmtChips(auctionNet.jackpot)+" 枚</div>"+
+    "<br><b>籌碼排行榜：</b><br>"+standings.map(function(s,i){return(i+1)+". "+escapeHtml(s.name)+"　🪙 "+fmtChips(s.chips)}).join("<br>")+
+    (gameOver&&standings.length?"<div class='setSummary'><b>🏁 本場結束</b><br>籌碼王："+escapeHtml(standings[0].name)+"　🪙 "+fmtChips(standings[0].chips)+" 枚</div>":"");
   qs("#revealAuction").style.display="none";qs("#nextAuctionRound").style.display=gameOver?"none":"inline-block";
   if(gameOver){qs("#startAuctionGame").style.display="inline-block";qs("#startAuctionGame").textContent="重新開一場 ↻"}
-  auctionPlayersArray().forEach(function(p){safeSend(auctionNet.conns[p.id],{type:"auctionReveal",results:results,scores:scores,gameOver:gameOver,target:auctionNet.target})});
+  arr.forEach(function(p){
+    safeSend(auctionNet.conns[p.id],{type:"auctionReveal",results:results,standings:standings,gameOver:gameOver,target:auctionNet.target,myChips:p.chips,jackpot:auctionNet.jackpot})
+  });
   updateAuctionRoster()
 }
 function updateAuctionPlayerClock(){
   if(!auctionNet.pressStartedAt||auctionNet.phase!=="running")return;
-  var elapsed=(performance.now()-auctionNet.pressStartedAt)/1000;
-  var el=qs("#auctionVisibleClock");
-  if(auctionNet.difficulty==="hard"){
-    el.textContent="隱藏";
-  }else if(elapsed<=auctionNet.visibleUntil){
-    el.textContent=elapsed.toFixed(1);
-  }else{
-    el.textContent="•••";
-  }
+  var elapsed=(performance.now()-auctionNet.pressStartedAt)/1000,el=qs("#auctionVisibleClock");
+  if(auctionNet.difficulty==="hard")el.textContent="隱藏";else if(elapsed<=auctionNet.visibleUntil)el.textContent=elapsed.toFixed(1);else el.textContent="•••";
   auctionNet.playerTimerRaf=requestAnimationFrame(updateAuctionPlayerClock)
 }
 function auctionPressStart(e){
-  if(auctionNet.mode!=="player"||auctionNet.phase!=="running"||auctionNet.pressStartedAt)return;
-  if(e&&e.preventDefault)e.preventDefault();
-  var b=qs("#auctionHoldBtn");if(b.disabled)return;
-  auctionNet.pressStartedAt=performance.now();
-  cancelAnimationFrame(auctionNet.playerTimerRaf);updateAuctionPlayerClock();
+  if(auctionNet.mode!=="player"||auctionNet.phase!=="running"||auctionNet.pressStartedAt)return;if(e&&e.preventDefault)e.preventDefault();
+  var b=qs("#auctionHoldBtn");if(b.disabled)return;auctionNet.pressStartedAt=performance.now();cancelAnimationFrame(auctionNet.playerTimerRaf);updateAuctionPlayerClock();
   if(e&&e.pointerId!=null){auctionNet.pressPointerId=e.pointerId;try{b.setPointerCapture(e.pointerId)}catch(err){}}
-  b.classList.add("holding");b.innerHTML="<span>計時中…</span><small>放開就停！</small>";
-  qs("#auctionPlayerStatus").textContent="不要數、不要偷看，感覺到了就放手。"
+  b.classList.add("holding");b.innerHTML="<span>計時中…</span><small>放開就停！</small>";qs("#auctionPlayerStatus").textContent="不要數、不要偷看，感覺到了就放手。"
 }
 function auctionPressStop(e){
-  if(!auctionNet.pressStartedAt||auctionNet.phase!=="running")return;
-  if(e&&e.preventDefault)e.preventDefault();
-  var elapsed=(performance.now()-auctionNet.pressStartedAt)/1000;
-  cancelAnimationFrame(auctionNet.playerTimerRaf);
-  auctionNet.pressStartedAt=0;auctionNet.pressPointerId=null;
-  qs("#auctionVisibleClock").textContent="已停止";
+  if(!auctionNet.pressStartedAt||auctionNet.phase!=="running")return;if(e&&e.preventDefault)e.preventDefault();
+  var elapsed=(performance.now()-auctionNet.pressStartedAt)/1000;cancelAnimationFrame(auctionNet.playerTimerRaf);auctionNet.pressStartedAt=0;auctionNet.pressPointerId=null;qs("#auctionVisibleClock").textContent="已停止";
   var b=qs("#auctionHoldBtn");b.classList.remove("holding");b.disabled=true;b.innerHTML="<span>已停止</span><small>送出中…</small>";
-  safeSend(auctionNet.hostConn,{type:"auctionSubmit",elapsed:elapsed});
-  qs("#auctionPlayerStatus").textContent="已停止，正在送出結果…"
+  safeSend(auctionNet.hostConn,{type:"auctionSubmit",elapsed:elapsed});qs("#auctionPlayerStatus").textContent="已停止，正在送出結果…"
 }
 
 qs("#createAuctionRoom").onclick=createAuctionRoom;
 qs("#joinAuctionRoom").onclick=function(){showAuctionPane("auctionJoin")};
 qs("#confirmAuctionJoin").onclick=joinAuctionRoom;
-qs("#startAuctionGame").onclick=function(){
-  if(auctionNet.roundNo>=auctionNet.totalRounds&&auctionNet.roundNo>0){auctionNet.roundNo=0;auctionNet.phase="lobby";this.textContent="開始第一回合 🎲"}
-  startAuctionRound()
-};
+qs("#startAuctionGame").onclick=function(){if(auctionNet.roundNo>=auctionNet.totalRounds&&auctionNet.roundNo>0){auctionNet.roundNo=0;auctionNet.phase="lobby";auctionNet.jackpot=0;this.textContent="開始第一回合 🎲"}startAuctionRound()};
 qs("#nextAuctionRound").onclick=startAuctionRound;
 qs("#revealAuction").onclick=revealAuctionRound;
+qsa("[data-auction-risk]").forEach(function(b){b.onclick=function(){auctionNet.selectedRisk=this.dataset.auctionRisk;qsa("[data-auction-risk]").forEach(function(x){x.classList.remove("active")});this.classList.add("active");var r=auctionRisk[auctionNet.selectedRisk];qs("#auctionBetSummary").textContent="目前："+r.label+" ±"+r.threshold+" 秒 ×"+r.multiplier+"｜押 "+fmtChips(auctionNet.selectedBet)+" 枚"}});
+qsa("[data-auction-bet]").forEach(function(b){b.onclick=function(){auctionNet.selectedBet=Number(this.dataset.auctionBet);qsa("[data-auction-bet]").forEach(function(x){x.classList.remove("active")});if(qs("#auctionAllIn"))qs("#auctionAllIn").classList.remove("active");this.classList.add("active");var r=auctionRisk[auctionNet.selectedRisk];qs("#auctionBetSummary").textContent="目前："+r.label+" ±"+r.threshold+" 秒 ×"+r.multiplier+"｜押 "+fmtChips(auctionNet.selectedBet)+" 枚"}});
+qs("#auctionAllIn").onclick=function(){auctionNet.selectedBet=auctionNet.playerChips;qsa("[data-auction-bet]").forEach(function(x){x.classList.remove("active")});this.classList.add("active");var r=auctionRisk[auctionNet.selectedRisk];qs("#auctionBetSummary").textContent="🔥 ALL IN："+r.label+" ±"+r.threshold+" 秒 ×"+r.multiplier+"｜押全部 "+fmtChips(auctionNet.selectedBet)+" 枚"};
+qs("#confirmAuctionBet").onclick=function(){var allIn=qs("#auctionAllIn").classList.contains("active");if(auctionNet.selectedBet<=0||auctionNet.selectedBet>auctionNet.playerChips){toast("籌碼不夠");return}safeSend(auctionNet.hostConn,{type:"auctionBet",bet:auctionNet.selectedBet,risk:auctionNet.selectedRisk,allIn:allIn});this.disabled=true;setTimeout(()=>{this.disabled=false},600)};
+(function(){var b=qs("#auctionHoldBtn");b.addEventListener("pointerdown",auctionPressStart);b.addEventListener("pointerup",auctionPressStop);b.addEventListener("pointercancel",auctionPressStop);b.addEventListener("contextmenu",function(e){e.preventDefault()});b.addEventListener("keydown",function(e){if((e.key===" "||e.key==="Enter")&&!e.repeat)auctionPressStart(e)});b.addEventListener("keyup",function(e){if(e.key===" "||e.key==="Enter")auctionPressStop(e)})})();
+qs("#shareAuctionRoom").onclick=function(){var url=location.origin+location.pathname+"?auction="+auctionNet.room;if(navigator.share)navigator.share({title:"時間豪賭",text:"加入時間豪賭房間 "+auctionNet.room,url:url}).catch(function(){});else if(navigator.clipboard)navigator.clipboard.writeText(url).then(function(){toast("加入連結已複製")})};
+(function(){var p=new URLSearchParams(location.search),code=(p.get("auction")||"").toUpperCase();if(code){show("auction");showAuctionPane("auctionJoin");qs("#auctionJoinCode").value=code}})();
 
-(function(){
-  var b=qs("#auctionHoldBtn");
-  b.addEventListener("pointerdown",auctionPressStart);
-  b.addEventListener("pointerup",auctionPressStop);
-  b.addEventListener("pointercancel",auctionPressStop);
-  b.addEventListener("contextmenu",function(e){e.preventDefault()});
-  b.addEventListener("keydown",function(e){
-    if((e.key===" "||e.key==="Enter")&&!e.repeat){auctionPressStart(e)}
-  });
-  b.addEventListener("keyup",function(e){
-    if(e.key===" "||e.key==="Enter"){auctionPressStop(e)}
-  })
-})();
-
-qs("#shareAuctionRoom").onclick=function(){
-  var url=location.origin+location.pathname+"?auction="+auctionNet.room;
-  if(navigator.share)navigator.share({title:"時間豪賭",text:"加入時間豪賭房間 "+auctionNet.room,url:url}).catch(function(){});
-  else if(navigator.clipboard)navigator.clipboard.writeText(url).then(function(){toast("加入連結已複製")})
-};
-
-(function(){
-  var p=new URLSearchParams(location.search),code=(p.get("auction")||"").toUpperCase();
-  if(code){show("auction");showAuctionPane("auctionJoin");qs("#auctionJoinCode").value=code}
-})();
 qs("#roomCode").textContent="BOBO-"+String(Math.floor(1000+Math.random()*9000));
 window.addEventListener("error",function(){toast("程式載入有問題，請重新整理")});
 })();
