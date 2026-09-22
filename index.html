@@ -236,11 +236,11 @@ textarea{font-family:inherit}
 </head>
 <body>
 <div class="app">
-<header><div class="brand"><div class="logo">波</div><div><b>宇製波波趣味坊</b><small>朋友聚會專用 · 今天不要太正經 · v20</small></div></div><button type="button" class="btn ghost" data-nav="home">⌂</button></header>
+<header><div class="brand"><div class="logo">波</div><div><b>宇製波波趣味坊</b><small>朋友聚會專用 · 今天不要太正經 · v21</small></div></div><button type="button" class="btn ghost" data-nav="home">⌂</button></header>
 
 <section id="home" class="screen active">
 <div class="hero"><div class="kicker">YUZHI BOBO PARTY LAB</div><h1>今晚，<br><span class="hot">玩點不一樣。</span></h1><p>聊天、鬥智、互相出賣，一個網站搞定。手機、iPad、筆電都可以直接玩，也都可以當主持螢幕。</p><div class="row"><button type="button" class="btn primary" data-nav="lobby">開一桌 ✨</button><button type="button" class="btn ghost" data-nav="deep">接受審判</button></div></div>
-<div class="sectionTitle"><h2>今晚玩什麼？</h2><span>BOBO v20 · 靈魂393題 · 瞎掰220詞</span></div>
+<div class="sectionTitle"><h2>今晚玩什麼？</h2><span>BOBO v21 · 靈魂393題 · 瞎掰220詞</span></div>
 <div class="grid">
 <button type="button" class="card" data-nav="deep"><div><div class="icon">💬</div><span class="tag">聊天 · 2–12 人</span><h3>靈魂審判局</h3><p>從暖身嘴砲一路審到靈魂深處，回答之前想清楚。</p></div><div class="go">進入審判 →</div></button>
 <button type="button" class="card" data-nav="auction"><div><div class="icon">⏱️</div><span class="tag">鬥智 · 3–10 人</span><h3>時間豪賭</h3><p>靠體感抓秒數，敢押多少就看你的膽量。</p></div><div class="go">我要賭秒數 →</div></button>
@@ -370,8 +370,8 @@ textarea{font-family:inherit}
       <h3>先下注，再開始計時</h3>
       <div class="status" style="text-align:left;margin-bottom:5px">① 你要挑戰多精準？</div>
       <div class="betChoiceRow">
-        <button type="button" class="betChoice risk active" data-auction-risk="safe">🟢 小賭<br><small>±1.5 秒 · ×1.5</small></button>
-        <button type="button" class="betChoice risk" data-auction-risk="bold">🟡 大賭<br><small>±0.8 秒 · ×2</small></button>
+        <button type="button" class="betChoice risk active" data-auction-risk="safe">🟢 小賭<br><small>±0.8 秒 · ×1.5</small></button>
+        <button type="button" class="betChoice risk" data-auction-risk="bold">🟡 大賭<br><small>±0.5 秒 · ×2</small></button>
         <button type="button" class="betChoice risk" data-auction-risk="wild">🔴 豪賭<br><small>±0.3 秒 · ×4</small></button>
       </div>
       <div class="status" style="text-align:left;margin-bottom:5px">② 要押幾枚？</div>
@@ -1114,8 +1114,8 @@ var auctionNet={
   playerChips:20,selectedBet:1,selectedRisk:"safe"
 };
 var auctionRisk={
-  safe:{label:"小賭",threshold:1.5,multiplier:1.5},
-  bold:{label:"大賭",threshold:.8,multiplier:2},
+  safe:{label:"小賭",threshold:.8,multiplier:1.5},
+  bold:{label:"大賭",threshold:.5,multiplier:2},
   wild:{label:"豪賭",threshold:.3,multiplier:4}
 };
 function fmtChips(n){return Number(n).toFixed(Number(n)%1?1:0)}
@@ -1197,7 +1197,7 @@ function resetAuctionBetUI(){
   qsa("[data-auction-risk]").forEach(function(b){b.classList.toggle("active",b.dataset.auctionRisk==="safe")});
   qsa("[data-auction-bet]").forEach(function(b){b.classList.toggle("active",b.dataset.auctionBet==="1")});
   if(qs("#auctionAllIn"))qs("#auctionAllIn").classList.remove("active");
-  qs("#auctionBetSummary").textContent="目前：小賭 ±1.5 秒 ×1.5｜押 1 枚";
+  qs("#auctionBetSummary").textContent="目前：小賭 ±0.8 秒 ×1.5｜押 1 枚";
   updateAuctionPlayerWallet()
 }
 function auctionPlayerMessage(msg){
