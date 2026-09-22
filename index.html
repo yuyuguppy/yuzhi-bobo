@@ -224,11 +224,11 @@ textarea{font-family:inherit}
 </head>
 <body>
 <div class="app">
-<header><div class="brand"><div class="logo">波</div><div><b>宇製波波趣味坊</b><small>朋友聚會專用 · 今天不要太正經 · v17</small></div></div><button type="button" class="btn ghost" data-nav="home">⌂</button></header>
+<header><div class="brand"><div class="logo">波</div><div><b>宇製波波趣味坊</b><small>朋友聚會專用 · 今天不要太正經 · v18</small></div></div><button type="button" class="btn ghost" data-nav="home">⌂</button></header>
 
 <section id="home" class="screen active">
 <div class="hero"><div class="kicker">YUZHI BOBO PARTY LAB</div><h1>今晚，<br><span class="hot">玩點不一樣。</span></h1><p>聊天、鬥智、互相出賣，一個網站搞定。手機、iPad、筆電都可以直接玩，也都可以當主持螢幕。</p><div class="row"><button type="button" class="btn primary" data-nav="lobby">開一桌 ✨</button><button type="button" class="btn ghost" data-nav="deep">接受審判</button></div></div>
-<div class="sectionTitle"><h2>今晚玩什麼？</h2><span>BOBO v17 · 靈魂393題 · 瞎掰220詞</span></div>
+<div class="sectionTitle"><h2>今晚玩什麼？</h2><span>BOBO v18 · 靈魂393題 · 瞎掰220詞</span></div>
 <div class="grid">
 <button type="button" class="card" data-nav="deep"><div><div class="icon">💬</div><span class="tag">聊天 · 2–12 人</span><h3>靈魂審判局</h3><p>從暖身嘴砲一路審到靈魂深處，回答之前想清楚。</p></div><div class="go">進入審判 →</div></button>
 <button type="button" class="card" data-nav="auction"><div><div class="icon">⏱️</div><span class="tag">鬥智 · 3–10 人</span><h3>時間豪賭</h3><p>靠體感抓秒數，敢押多少就看你的膽量。</p></div><div class="go">我要賭秒數 →</div></button>
@@ -310,6 +310,13 @@ textarea{font-family:inherit}
           <option value="5,12">5～12 秒</option><option value="8,20" selected>8～20 秒</option><option value="10,30">10～30 秒</option><option value="20,45">20～45 秒</option>
         </select>
       </div>
+      <div style="flex:1;min-width:180px">
+        <label style="display:block;margin-bottom:6px;color:var(--muted);font-size:13px">難度</label>
+        <select id="auctionDifficulty" class="chip" style="width:100%;font-size:16px">
+          <option value="normal" selected>普通｜前段顯示、後段隱藏</option>
+          <option value="hard">困難｜全程不顯示</option>
+        </select>
+      </div>
     </div>
     <div class="note" style="margin-top:12px"><b>計分：</b>第 1 名 +3、第 2 名 +2、第 3 名 +1。誤差越小排名越前；完全相同誤差則並列同分。</div>
     <div class="row" style="margin-top:14px"><button type="button" id="startAuctionGame" class="btn primary">開始第一回合 🎲</button></div>
@@ -347,6 +354,8 @@ textarea{font-family:inherit}
     </div>
 
     <div id="auctionPlayBox" style="display:none">
+      <div id="auctionVisibleClock" class="clock" style="font-size:clamp(54px,15vw,110px);padding:16px 4px 6px">—</div>
+      <div id="auctionDifficultyHint" class="status" style="margin-bottom:6px"></div>
       <div class="timeHoldWrap">
         <button type="button" id="auctionHoldBtn" class="timeHoldBtn">
           <span>按住開始</span>
@@ -1066,8 +1075,8 @@ renderHostCats();
 })();
 var auctionNet={
   mode:null,peer:null,hostConn:null,conns:{},players:{},room:"",
-  roundNo:0,totalRounds:5,minSec:8,maxSec:20,target:0,submissions:{},
-  phase:"lobby",pressStartedAt:0,pressPointerId:null
+  roundNo:0,totalRounds:5,minSec:8,maxSec:20,target:0,submissions:{},difficulty:"normal",visibleUntil:0,
+  phase:"lobby",pressStartedAt:0,pressPointerId:null,playerTimerRaf:0
 };
 function auctionPeerId(code){return "bobo-time-"+String(code||"").toLowerCase()}
 function auctionPlayersArray(){return Object.keys(auctionNet.players).map(function(id){return auctionNet.players[id]})}
@@ -1147,6 +1156,9 @@ function auctionPlayerMessage(msg){
     qs("#auctionPlayerTarget").textContent=Number(msg.target).toFixed(1);
     qs("#auctionPlayerStatus").textContent="看好目標。準備好後，按住大按鈕開始。";
     qs("#auctionPlayBox").style.display="block";qs("#auctionPlayerResult").style.display="none";
+    qs("#auctionVisibleClock").textContent=msg.difficulty==="hard"?"隱藏":"0.0";
+    qs("#auctionDifficultyHint").textContent=msg.difficulty==="hard"?"困難模式｜全程不顯示秒數":"普通模式｜前 "+Number(msg.visibleUntil).toFixed(1)+" 秒會顯示，之後隱藏";
+    auctionNet.difficulty=msg.difficulty||"normal";auctionNet.visibleUntil=Number(msg.visibleUntil)||0;
     var b=qs("#auctionHoldBtn");b.disabled=false;b.classList.remove("holding");b.innerHTML="<span>按住開始</span><small>放開就停</small>"
   }
   if(msg.type==="auctionSubmitted"){
@@ -1173,19 +1185,21 @@ function startAuctionRound(){
     auctionNet.totalRounds=parseInt(qs("#auctionRounds").value||"5",10);
     var range=String(qs("#auctionRange").value||"8,20").split(",");
     auctionNet.minSec=parseFloat(range[0]);auctionNet.maxSec=parseFloat(range[1]);
+    auctionNet.difficulty=String(qs("#auctionDifficulty").value||"normal");
     arr.forEach(function(p){p.score=0})
   }
   if(auctionNet.roundNo>=auctionNet.totalRounds){toast("本場已經結束");return}
   auctionNet.roundNo++;
   auctionNet.target=Math.round((auctionNet.minSec+Math.random()*(auctionNet.maxSec-auctionNet.minSec))*10)/10;
+  auctionNet.visibleUntil=auctionNet.difficulty==="normal"?Math.max(2,Math.min(auctionNet.target-2,Math.round(auctionNet.target*0.55*10)/10)):0;
   auctionNet.submissions={};auctionNet.phase="running";
   qs("#auctionHostRound").style.display="block";
   qs("#auctionRoundBadge").textContent="第 "+auctionNet.roundNo+" / "+auctionNet.totalRounds+" 回合";
   qs("#auctionTarget").textContent=auctionNet.target.toFixed(1);
-  qs("#auctionHostProgress").textContent="等待玩家挑戰… 0 / "+arr.length;
+  qs("#auctionHostProgress").textContent="等待玩家挑戰… 0 / "+arr.length+"｜"+(auctionNet.difficulty==="hard"?"困難：全程隱藏":"普通：前段顯示");
   qs("#auctionSubmissionList").innerHTML="";qs("#auctionReveal").style.display="none";
   qs("#revealAuction").style.display="none";qs("#nextAuctionRound").style.display="none";qs("#startAuctionGame").style.display="none";
-  arr.forEach(function(p){safeSend(auctionNet.conns[p.id],{type:"auctionRound",roundNo:auctionNet.roundNo,totalRounds:auctionNet.totalRounds,target:auctionNet.target})});
+  arr.forEach(function(p){safeSend(auctionNet.conns[p.id],{type:"auctionRound",roundNo:auctionNet.roundNo,totalRounds:auctionNet.totalRounds,target:auctionNet.target,difficulty:auctionNet.difficulty,visibleUntil:auctionNet.visibleUntil})});
   renderAuctionSubmissions()
 }
 function renderAuctionSubmissions(){
@@ -1225,11 +1239,25 @@ function revealAuctionRound(){
   auctionPlayersArray().forEach(function(p){safeSend(auctionNet.conns[p.id],{type:"auctionReveal",results:results,scores:scores,gameOver:gameOver,target:auctionNet.target})});
   updateAuctionRoster()
 }
+function updateAuctionPlayerClock(){
+  if(!auctionNet.pressStartedAt||auctionNet.phase!=="running")return;
+  var elapsed=(performance.now()-auctionNet.pressStartedAt)/1000;
+  var el=qs("#auctionVisibleClock");
+  if(auctionNet.difficulty==="hard"){
+    el.textContent="隱藏";
+  }else if(elapsed<=auctionNet.visibleUntil){
+    el.textContent=elapsed.toFixed(1);
+  }else{
+    el.textContent="•••";
+  }
+  auctionNet.playerTimerRaf=requestAnimationFrame(updateAuctionPlayerClock)
+}
 function auctionPressStart(e){
   if(auctionNet.mode!=="player"||auctionNet.phase!=="running"||auctionNet.pressStartedAt)return;
   if(e&&e.preventDefault)e.preventDefault();
   var b=qs("#auctionHoldBtn");if(b.disabled)return;
   auctionNet.pressStartedAt=performance.now();
+  cancelAnimationFrame(auctionNet.playerTimerRaf);updateAuctionPlayerClock();
   if(e&&e.pointerId!=null){auctionNet.pressPointerId=e.pointerId;try{b.setPointerCapture(e.pointerId)}catch(err){}}
   b.classList.add("holding");b.innerHTML="<span>計時中…</span><small>放開就停！</small>";
   qs("#auctionPlayerStatus").textContent="不要數、不要偷看，感覺到了就放手。"
@@ -1238,7 +1266,9 @@ function auctionPressStop(e){
   if(!auctionNet.pressStartedAt||auctionNet.phase!=="running")return;
   if(e&&e.preventDefault)e.preventDefault();
   var elapsed=(performance.now()-auctionNet.pressStartedAt)/1000;
+  cancelAnimationFrame(auctionNet.playerTimerRaf);
   auctionNet.pressStartedAt=0;auctionNet.pressPointerId=null;
+  qs("#auctionVisibleClock").textContent="已停止";
   var b=qs("#auctionHoldBtn");b.classList.remove("holding");b.disabled=true;b.innerHTML="<span>已停止</span><small>送出中…</small>";
   safeSend(auctionNet.hostConn,{type:"auctionSubmit",elapsed:elapsed});
   qs("#auctionPlayerStatus").textContent="已停止，正在送出結果…"
