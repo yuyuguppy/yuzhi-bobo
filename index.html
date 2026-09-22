@@ -169,11 +169,11 @@ textarea{font-family:inherit}
 </head>
 <body>
 <div class="app">
-<header><div class="brand"><div class="logo">波</div><div><b>宇製波波趣味坊</b><small>朋友聚會專用 · 今天不要太正經 · v12</small></div></div><button type="button" class="btn ghost" data-nav="home">⌂</button></header>
+<header><div class="brand"><div class="logo">波</div><div><b>宇製波波趣味坊</b><small>朋友聚會專用 · 今天不要太正經 · v13</small></div></div><button type="button" class="btn ghost" data-nav="home">⌂</button></header>
 
 <section id="home" class="screen active">
 <div class="hero"><div class="kicker">YUZHI BOBO PARTY LAB</div><h1>今晚，<br><span class="hot">玩點不一樣。</span></h1><p>聊天、鬥智、互相出賣，一個網站搞定。手機、iPad、筆電都可以直接玩，也都可以當主持螢幕。</p><div class="row"><button type="button" class="btn primary" data-nav="lobby">開一桌 ✨</button><button type="button" class="btn ghost" data-nav="deep">接受審判</button></div></div>
-<div class="sectionTitle"><h2>今晚玩什麼？</h2><span>BOBO v12 · 靈魂393題 · 瞎掰220詞</span></div>
+<div class="sectionTitle"><h2>今晚玩什麼？</h2><span>BOBO v13 · 靈魂393題 · 瞎掰220詞</span></div>
 <div class="grid">
 <button type="button" class="card" data-nav="deep"><div><div class="icon">💬</div><span class="tag">聊天 · 2–12 人</span><h3>靈魂審判局</h3><p>從暖身嘴砲一路審到靈魂深處，回答之前想清楚。</p></div><div class="go">進入審判 →</div></button>
 <button type="button" class="card" data-nav="auction"><div><div class="icon">⏱️</div><span class="tag">鬥智 · 3–10 人</span><h3>時間豪賭</h3><p>靠體感抓秒數，敢押多少就看你的膽量。</p></div><div class="go">我要賭秒數 →</div></button>
@@ -297,6 +297,7 @@ textarea{font-family:inherit}
   </div>
   <div id="truthDefinitionBox" class="note" style="display:none"></div>
   <div id="playerTurnBox" class="note" style="display:none;margin-top:14px"></div>
+  <div id="playerSpeakingOrder" class="note" style="display:none;margin-top:10px"></div>
   <div id="playerVoting" style="display:none">
     <div class="sectionTitle"><h2>誰拿到真答案？</h2><span>猜題者請選一個人</span></div>
     <div id="playerAnswerChoices"></div>
@@ -594,6 +595,13 @@ function playerMessage(msg){
   if(msg.type==="role"){
     qs("#playerReveal").style.display="none";qs("#playerVoting").style.display="none";qs("#playerTurnBox").style.display="block";
     qs("#playerBluffWord").textContent=msg.word;
+    if(msg.order&&msg.order.length){
+      qs("#playerSpeakingOrder").style.display="block";
+      var pos=msg.order.findIndex(function(x){return x.id===msg.selfId});
+      qs("#playerSpeakingOrder").innerHTML="<b>本輪發言順序：</b><br>"+msg.order.map(function(x,i){var me=x.id===msg.selfId?"（你）":"";return (i+1)+". "+escapeHtml(x.name)+me}).join("<br>")+(pos>=0?"<br><br><b>你是第 "+(pos+1)+" 位發言。</b>":"");
+    }else{
+      qs("#playerSpeakingOrder").style.display="none";
+    }
     qs("#playerBluffHints").innerHTML=(msg.hints||[]).map(function(h){return "<span class=\"chip\">提示："+escapeHtml(h)+"</span>"}).join("");
     qs("#playerTimer").textContent="30 秒";
     if(msg.role==="guesser"){
@@ -623,10 +631,10 @@ function playerMessage(msg){
       if(msg.isSpeaker){
         qs("#playerRoleTag").textContent="🎤 輪到你了";
         qs("#playerTurnBox").style.display="block";
-        qs("#playerTurnBox").innerHTML="<b>現在請開始講！</b><br>你有 "+msg.left+" 秒。";
+        qs("#playerTurnBox").innerHTML="<b>現在請開始講！</b><br>你有 "+msg.left+" 秒。"+(msg.nextSpeakerName?"<br><br>下一位："+escapeHtml(msg.nextSpeakerName):"");
       }else{
         qs("#playerTurnBox").style.display="block";
-        qs("#playerTurnBox").innerHTML="現在是 <b>"+escapeHtml(msg.speakerName)+"</b> 在講。請先不要插嘴。";
+        qs("#playerTurnBox").innerHTML="現在是 <b>"+escapeHtml(msg.speakerName)+"</b> 在講。"+(msg.nextSpeakerName?"<br>下一位："+escapeHtml(msg.nextSpeakerName):"");
       }
     }
   }
@@ -706,7 +714,9 @@ function startHostRound(){
     var role=p.id===guesser.id?"guesser":(p.id===truth.id?"truth":"bluffer");
     safeSend(bluffNet.conns[p.id],{
       type:"role",role:role,word:item[0],hints:item[2]||[],category:bluffCat,
-      definition:role==="truth"?item[1]:null
+      definition:role==="truth"?item[1]:null,
+      selfId:p.id,
+      order:order.map(function(id){return{id:id,name:bluffNet.players[id].name}})
     })
   });
   startThinkingPhase()
@@ -750,7 +760,7 @@ function startNextSpeaker(){
   runCountdown(bluffNet.speakTime,function(left){
     qs("#hostTimer").textContent=left+" 秒";
     playerArray().forEach(function(p){
-      safeSend(bluffNet.conns[p.id],{type:"phase",phase:"speaking",left:left,isSpeaker:p.id===speakerId,speakerName:speaker.name})
+      safeSend(bluffNet.conns[p.id],{type:"phase",phase:"speaking",left:left,isSpeaker:p.id===speakerId,speakerName:speaker.name,nextSpeakerName:(r.speakerIndex+1<r.order.length?bluffNet.players[r.order[r.speakerIndex+1]].name:"")})
     })
   },function(){startNextSpeaker()})
 }
